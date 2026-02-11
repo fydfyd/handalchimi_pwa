@@ -435,6 +435,8 @@
   <div class="toast" id="toast"></div>
 
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="https://unpkg.com/dom-to-image-more@3.4.3/dist/dom-to-image-more.min.js"></script>
+
   <script>
     const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
     const ICONS = { '': '📷', spring: '🌸', summer: '🌊', autumn: '🍂', winter: '❄️', knitting: '🧶', climbing: '🧗', swimming: '🏊' };
@@ -843,28 +845,49 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
     $('saveBtn').onclick = async () => {
       toast('이미지 생성 중...');
       try {
-        const canvas = await html2canvas($('calendarCard'), { scale: 2, useCORS: true });
+        const node = $('calendarCard');
+
+        const dataUrl = await domtoimage.toPng(node, {
+          cacheBust: true
+        });
+
         const link = document.createElement('a');
         const calName = calendars[currentCalendarId]?.name || '달력';
         link.download = `${calName}_${currentYear}_${currentMonth+1}.png`;
-        link.href = canvas.toDataURL('image/png');
+        link.href = dataUrl;
         link.click();
+
         toast('저장되었습니다 📸');
-      } catch(e) { toast('저장 실패'); }
+      } catch (e) {
+        console.error(e);
+        toast('저장 실패');
+      }
     };
+
 
     $('shareBtn').onclick = async () => {
       if (!navigator.share) { toast('공유 미지원'); return; }
       toast('이미지 생성 중...');
       try {
-        const canvas = await html2canvas($('calendarCard'), { scale: 2, useCORS: true });
-        canvas.toBlob(async blob => {
-          const calName = calendars[currentCalendarId]?.name || '달력';
-          const file = new File([blob], `${calName}.png`, { type: 'image/png' });
-          try { await navigator.share({ files: [file] }); } catch(e) {}
-        }, 'image/png');
-      } catch(e) { toast('공유 실패'); }
+        const node = $('calendarCard');
+
+        const dataUrl = await domtoimage.toPng(node, {
+          cacheBust: true
+        });
+
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+
+        const calName = calendars[currentCalendarId]?.name || '달력';
+        const file = new File([blob], `${calName}.png`, { type: 'image/png' });
+
+        try { await navigator.share({ files: [file] }); } catch (e) {}
+      } catch (e) {
+        console.error(e);
+        toast('공유 실패');
+      }
     };
+
 
     function toast(msg) {
       const t = $('toast');
