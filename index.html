@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#FDF6E3">
+  <title>한 달 취미</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="한 달 취미">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Gaegu&family=Single+Day&family=Jua&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      transition: background-color 0.3s;
+    }
+
+    :root {
+      --bg: #FDF6E3; --card: #FFFDF9; --text1: #3D3229; --text2: #8B7E74;
+      --cell: #F5F0E8; --border: #EDE8E0; --sun: #E07A5F; --sat: #457B9D;
+      --btn: #3D3229; --btn-text: #FFFDF9; --radius: 8px; --font: -apple-system, sans-serif;
+      --photo-radius: 8px;
+    }
+
+    .theme-spring { --bg: #FFF5F8; --card: #FFFFFF; --text1: #8B4B6B; --text2: #C48B9F; --cell: #FFE8EF; --border: #FFD6E4; --sun: #FF6B9D; --sat: #9B6B9E; --btn: #FF85A2; --btn-text: #FFF; --font: 'Gaegu', cursive; }
+    .theme-summer { --bg: #E8F6FF; --card: #FFFFFF; --text1: #1A5F7A; --text2: #57A0C1; --cell: #D0EFFF; --border: #B8E4FF; --sun: #FF7B54; --sat: #3DB2FF; --btn: #00A8CC; --btn-text: #FFF; --font: 'Jua', sans-serif; }
+    .theme-autumn { --bg: #FDF4E8; --card: #FFFBF5; --text1: #6B4423; --text2: #A67C52; --cell: #F5E6D3; --border: #E8D4BC; --sun: #D4694A; --sat: #8B6914; --btn: #A0522D; --btn-text: #FFF; --font: 'Nanum Pen Script', cursive; }
+    .theme-winter { --bg: #F0F5FA; --card: #FFFFFF; --text1: #3A4A5C; --text2: #7A8A9C; --cell: #E8EEF5; --border: #D0DCE8; --sun: #6B9AC4; --sat: #4A7BA7; --btn: #5B7A99; --btn-text: #FFF; --font: -apple-system, sans-serif; }
+    .theme-knitting { --bg: #FFF8F0; --card: #FFFCF7; --text1: #6D4C41; --text2: #A1887F; --cell: #FFEDE0; --border: #E8D5C4; --sun: #E57373; --sat: #7986CB; --btn: #8D6E63; --btn-text: #FFF; --font: 'Gaegu', cursive; }
+    .theme-climbing { --bg: #F5F5F5; --card: #FFFFFF; --text1: #2D3436; --text2: #636E72; --cell: #E8E8E8; --border: #DFE6E9; --sun: #FF6B6B; --sat: #4ECDC4; --btn: #2D3436; --btn-text: #FFF; --font: 'Jua', sans-serif; }
+    .theme-swimming { --bg: #E3F2FD; --card: #FFFFFF; --text1: #0D47A1; --text2: #5472D3; --cell: #BBDEFB; --border: #90CAF9; --sun: #FF8A65; --sat: #4FC3F7; --btn: #1976D2; --btn-text: #FFF; --font: 'Single Day', cursive; }
+
+    .shape-square { --photo-radius: 4px; }
+    .shape-rounded { --photo-radius: 12px; }
+    .shape-circle { --photo-radius: 50%; }
+    .shape-polaroid, .shape-film, .shape-stamp { --photo-radius: 2px; }
+    .shape-heart, .shape-hexagon { --photo-radius: 0; }
+
+    body { background: var(--bg); }
+    .container { max-width: 420px; margin: 0 auto; padding: 16px 16px 40px; }
+    
+    .header { text-align: center; margin-bottom: 12px; }
+    .title { font-size: 24px; font-weight: 700; color: var(--text1); font-family: var(--font); }
+    .subtitle { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+    /* Calendar Selector */
+    .calendar-selector {
+      display: flex; gap: 8px; align-items: center; margin-bottom: 12px;
+    }
+    .calendar-dropdown {
+      flex: 1; padding: 10px 12px; border-radius: 12px;
+      border: 2px solid var(--border); background: var(--card);
+      font-size: 14px; color: var(--text1); cursor: pointer;
+      font-family: var(--font);
+    }
+    .calendar-dropdown:focus { outline: none; border-color: var(--btn); }
+    
+    .icon-btn {
+      width: 40px; height: 40px; border-radius: 12px; border: none;
+      background: var(--cell); color: var(--text1); font-size: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .icon-btn:active { transform: scale(0.95); }
+    .icon-btn.danger { background: #FEE2E2; color: #B91C1C; }
+    .icon-btn.primary { background: var(--btn); color: var(--btn-text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex; gap: 0; margin-bottom: 12px;
+      background: var(--cell); border-radius: 12px; padding: 4px;
+    }
+    .tab {
+      flex: 1; padding: 10px 8px; border: none; background: transparent;
+      font-size: 12px; font-weight: 600; color: var(--text2);
+      border-radius: 10px; cursor: pointer; transition: all 0.2s;
+    }
+    .tab.active { background: var(--card); color: var(--text1); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Theme & Shape Selectors */
+    .section-label { font-size: 12px; color: var(--text2); margin-bottom: 8px; display: block; font-weight: 600; }
+    
+    .theme-selector {
+      display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 12px;
+      scrollbar-width: none;
+    }
+    .theme-selector::-webkit-scrollbar { display: none; }
+    .theme-btn {
+      flex-shrink: 0; padding: 8px 12px; border-radius: 20px;
+      border: 2px solid var(--border); background: var(--card);
+      font-size: 12px; cursor: pointer; white-space: nowrap; color: var(--text2);
+    }
+    .theme-btn.active { border-color: var(--btn); background: var(--btn); color: var(--btn-text); }
+    .theme-btn:active { transform: scale(0.95); }
+
+    .shape-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+    .shape-btn {
+      aspect-ratio: 1; border: 2px solid var(--border); border-radius: 12px;
+      background: var(--card); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 4px;
+      font-size: 9px; color: var(--text2); cursor: pointer;
+    }
+    .shape-btn.active { border-color: var(--btn); background: var(--btn); color: var(--btn-text); }
+    .shape-btn:active { transform: scale(0.95); }
+    .shape-btn .preview { width: 20px; height: 20px; background: var(--text2); opacity: 0.5; }
+    .shape-btn.active .preview { background: var(--btn-text); opacity: 0.8; }
+    .shape-btn[data-shape="square"] .preview { border-radius: 2px; }
+    .shape-btn[data-shape="rounded"] .preview { border-radius: 6px; }
+    .shape-btn[data-shape="circle"] .preview { border-radius: 50%; }
+    .shape-btn[data-shape="polaroid"] .preview { border-radius: 1px; height: 24px; background: linear-gradient(to bottom, var(--text2) 65%, var(--card) 65%); }
+    .shape-btn.active[data-shape="polaroid"] .preview { background: linear-gradient(to bottom, var(--btn-text) 65%, var(--btn) 65%); }
+    .shape-btn[data-shape="film"] .preview { border: 2px solid currentColor; border-radius: 1px; }
+    .shape-btn[data-shape="stamp"] .preview { border: 2px dashed currentColor; }
+    .shape-btn[data-shape="heart"] .preview { clip-path: polygon(50% 5%, 65% 0%, 85% 5%, 100% 25%, 100% 45%, 85% 70%, 50% 100%, 15% 70%, 0% 45%, 0% 25%, 15% 5%, 35% 0%); width: 24px; }
+    .shape-btn[data-shape="hexagon"] .preview { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+
+    /* Background */
+    .bg-section { margin-bottom: 12px; }
+    .bg-options { display: flex; gap: 8px; align-items: center; }
+    .bg-upload-btn {
+      flex: 1; padding: 12px; border: 2px dashed var(--border); border-radius: 12px;
+      background: var(--card); color: var(--text2); font-size: 12px;
+      cursor: pointer; text-align: center;
+    }
+    .bg-clear-btn {
+      padding: 12px 16px; border: none; border-radius: 12px;
+      background: #FEE2E2; color: #B91C1C; font-size: 12px; cursor: pointer;
+    }
+    .bg-preview { margin-top: 8px; border-radius: 8px; overflow: hidden; display: none; }
+    .bg-preview.show { display: block; }
+    .bg-preview img { width: 100%; height: 60px; object-fit: cover; }
+
+    /* Calendar */
+    .calendar-card {
+      background: var(--card); border-radius: 20px; padding: 16px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06); position: relative; overflow: hidden;
+    }
+    .custom-bg {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background-size: cover; background-position: center;
+      opacity: 0.3; pointer-events: none;
+    }
+    .pattern {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none; opacity: 0.4;
+    }
+    .theme-spring .pattern { background: radial-gradient(circle at 20% 30%, #FFB6C1 2px, transparent 2px), radial-gradient(circle at 70% 60%, #FFB6C1 1.5px, transparent 1.5px); background-size: 60px 60px; }
+    .theme-summer .pattern { background: radial-gradient(circle at 30% 40%, rgba(135,206,235,0.4) 15px, transparent 15px), radial-gradient(circle at 70% 70%, rgba(135,206,235,0.3) 20px, transparent 20px); background-size: 80px 80px; }
+    .theme-autumn .pattern { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M20 10Q25 20 20 25Q15 20 20 10' fill='%23D2691E' opacity='0.2'/%3E%3Cpath d='M55 50Q60 60 55 65Q50 60 55 50' fill='%23CD853F' opacity='0.2'/%3E%3C/svg%3E"); }
+    .theme-winter .pattern { background: radial-gradient(circle at 25% 25%, rgba(176,196,222,0.5) 2px, transparent 2px), radial-gradient(circle at 75% 75%, rgba(176,196,222,0.4) 1.5px, transparent 1.5px); background-size: 40px 40px; }
+    .theme-knitting .pattern { background: repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(188,170,164,0.2) 10px, rgba(188,170,164,0.2) 12px); }
+    .theme-climbing .pattern { background: radial-gradient(circle at 20% 30%, #FF6B6B 8px, transparent 8px), radial-gradient(circle at 50% 60%, #4ECDC4 10px, transparent 10px), radial-gradient(circle at 80% 40%, #FFE66D 7px, transparent 7px); background-size: 100px 100px; opacity: 0.3; }
+    .theme-swimming .pattern { background: radial-gradient(circle at 20% 30%, rgba(100,181,246,0.3) 8px, transparent 8px), radial-gradient(circle at 60% 50%, rgba(100,181,246,0.25) 12px, transparent 12px); background-size: 90px 90px; }
+
+    .month-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; position: relative; z-index: 1;
+    }
+    .nav-btn {
+      width: 36px; height: 36px; border-radius: 10px; border: none;
+      background: var(--cell); color: var(--text1); font-size: 14px; cursor: pointer;
+    }
+    .nav-btn:active { transform: scale(0.95); }
+    .month-title { font-size: 17px; font-weight: 600; color: var(--text1); font-family: var(--font); }
+
+    .day-headers { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 4px; position: relative; z-index: 1; }
+    .day-header { text-align: center; font-size: 10px; font-weight: 600; padding: 4px 0; color: var(--text2); }
+    .day-header.sun { color: var(--sun); }
+    .day-header.sat { color: var(--sat); }
+
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; position: relative; z-index: 1; }
+    .day-cell { aspect-ratio: 1; overflow: visible; position: relative; cursor: pointer; transition: transform 0.15s; }
+    .day-cell:active { transform: scale(0.95); }
+    .day-cell.empty { cursor: default; }
+
+    .day-cell .photo-wrap {
+      width: 100%; height: 100%; overflow: hidden; position: relative;
+      background: var(--card); border-radius: var(--photo-radius);
+    }
+    .shape-polaroid .day-cell .photo-wrap { padding: 3px 3px 14px 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); border-radius: 2px; }
+    .shape-film .day-cell .photo-wrap { border: 2px solid #2C1810; padding: 2px; }
+    .shape-stamp .day-cell .photo-wrap { border: 3px dashed var(--border); }
+    .shape-heart .day-cell .photo-wrap { clip-path: polygon(50% 5%, 65% 0%, 85% 5%, 100% 25%, 100% 45%, 85% 70%, 50% 100%, 15% 70%, 0% 45%, 0% 25%, 15% 5%, 35% 0%); }
+    .shape-hexagon .day-cell .photo-wrap { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+
+    .day-cell .photo { width: 100%; height: 100%; object-fit: cover; border-radius: var(--photo-radius); display: block; }
+    .shape-polaroid .day-cell .photo, .shape-film .day-cell .photo { border-radius: 1px; }
+
+    .day-cell .overlay {
+      position: absolute; bottom: 2px; right: 4px;
+      font-size: 8px; font-weight: 600; color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.7); z-index: 2;
+    }
+    .shape-polaroid .day-cell .overlay { bottom: 4px; color: var(--text1); text-shadow: none; font-size: 7px; }
+
+    .day-cell .empty-day {
+      width: 100%; height: 100%; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; background: var(--cell);
+      border-radius: var(--photo-radius); gap: 1px;
+    }
+    .shape-heart .day-cell .empty-day { clip-path: polygon(50% 5%, 65% 0%, 85% 5%, 100% 25%, 100% 45%, 85% 70%, 50% 100%, 15% 70%, 0% 45%, 0% 25%, 15% 5%, 35% 0%); }
+    .shape-hexagon .day-cell .empty-day { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+
+    .day-cell .day-num { font-size: 12px; font-weight: 500; color: var(--text2); }
+    .day-cell .day-num.sun { color: var(--sun); }
+    .day-cell .day-num.sat { color: var(--sat); }
+    .day-cell .icon { font-size: 8px; opacity: 0.4; }
+
+    .photo-count {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--text2); position: relative; z-index: 1;
+    }
+
+    .export-buttons { display: flex; gap: 8px; margin-top: 14px; }
+    .export-btn {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 12px; border-radius: 12px; border: none;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .export-btn:active { transform: scale(0.98); }
+    .export-btn.primary { background: var(--btn); color: var(--btn-text); }
+    .export-btn.secondary { background: transparent; border: 2px solid var(--btn); color: var(--btn); }
+
+    .hint { text-align: center; margin-top: 12px; font-size: 11px; color: var(--text2); }
+
+    /* Modal */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85); justify-content: center; align-items: center;
+      padding: 20px; z-index: 1000;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--card); border-radius: 20px; overflow: hidden;
+      max-width: 300px; width: 100%;
+    }
+    .modal-header { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); }
+    .modal-title { font-size: 16px; font-weight: 600; color: var(--text1); }
+    .modal-body { padding: 16px; }
+    .modal-input {
+      width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 12px;
+      font-size: 14px; color: var(--text1); background: var(--card);
+    }
+    .modal-input:focus { outline: none; border-color: var(--btn); }
+    .modal-image { width: 100%; aspect-ratio: 1; object-fit: cover; }
+    .modal-info { padding: 12px 14px 8px; }
+    .modal-date { font-size: 15px; font-weight: 600; color: var(--text1); font-family: var(--font); }
+    .modal-buttons { display: flex; gap: 8px; padding: 12px; }
+    .modal-btn {
+      flex: 1; padding: 12px; border-radius: 12px; border: none;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .modal-btn.primary { background: var(--btn); color: var(--btn-text); }
+    .modal-btn.delete { background: #FEE2E2; color: #B91C1C; }
+    .modal-btn.close { background: var(--cell); color: var(--text2); }
+
+    .toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--btn); color: var(--btn-text); padding: 10px 20px;
+      border-radius: 50px; font-size: 12px; font-weight: 500; opacity: 0;
+      transition: all 0.3s; z-index: 1001; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    input[type="file"] { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">한 달 취미</h1>
+      <p class="subtitle">매일의 순간을 담아보세요</p>
+    </header>
+
+    <!-- Calendar Selector -->
+    <div class="calendar-selector">
+      <select class="calendar-dropdown" id="calendarSelect"></select>
+      <button class="icon-btn primary" id="addCalendarBtn" title="새 달력">➕</button>
+      <button class="icon-btn" id="renameCalendarBtn" title="이름 변경">✏️</button>
+      <button class="icon-btn danger" id="deleteCalendarBtn" title="삭제">🗑️</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="calendar">📅 달력</button>
+      <button class="tab" data-tab="theme">🎨 테마</button>
+      <button class="tab" data-tab="custom">✨ 꾸미기</button>
+    </div>
+
+    <!-- Calendar Panel -->
+    <div class="panel active" id="panelCalendar">
+      <div class="calendar-card" id="calendarCard">
+        <div class="custom-bg" id="customBg"></div>
+        <div class="pattern"></div>
+        <div class="month-nav">
+          <button class="nav-btn" id="prevBtn">◀</button>
+          <h2 class="month-title" id="monthTitle"></h2>
+          <button class="nav-btn" id="nextBtn">▶</button>
+        </div>
+        <div class="day-headers">
+          <div class="day-header sun">일</div>
+          <div class="day-header">월</div>
+          <div class="day-header">화</div>
+          <div class="day-header">수</div>
+          <div class="day-header">목</div>
+          <div class="day-header">금</div>
+          <div class="day-header sat">토</div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+        <div class="photo-count"><span id="themeIcon">📷</span> <span id="photoCount">0장의 추억</span></div>
+      </div>
+      <div class="export-buttons">
+        <button class="export-btn primary" id="saveBtn">💾 저장</button>
+        <button class="export-btn secondary" id="shareBtn">📤 공유</button>
+      </div>
+      <p class="hint">💡 날짜를 탭하여 사진을 추가해보세요</p>
+    </div>
+
+    <!-- Theme Panel -->
+    <div class="panel" id="panelTheme">
+      <label class="section-label">🎨 테마 선택</label>
+      <div class="theme-selector" id="themeSelector">
+        <button class="theme-btn active" data-theme="">🎨 기본</button>
+        <button class="theme-btn" data-theme="spring">🌸 봄</button>
+        <button class="theme-btn" data-theme="summer">🌊 여름</button>
+        <button class="theme-btn" data-theme="autumn">🍂 가을</button>
+        <button class="theme-btn" data-theme="winter">❄️ 겨울</button>
+        <button class="theme-btn" data-theme="knitting">🧶 뜨개질</button>
+        <button class="theme-btn" data-theme="climbing">🧗 클라이밍</button>
+        <button class="theme-btn" data-theme="swimming">🏊 수영</button>
+      </div>
+      <div class="calendar-card" id="themePreviewCard">
+        <div class="custom-bg" id="customBgPreview"></div>
+        <div class="pattern"></div>
+        <div class="month-nav">
+          <button class="nav-btn">◀</button>
+          <h2 class="month-title">미리보기</h2>
+          <button class="nav-btn">▶</button>
+        </div>
+        <div class="calendar-grid" id="previewGrid"></div>
+      </div>
+    </div>
+
+    <!-- Custom Panel -->
+    <div class="panel" id="panelCustom">
+      <div class="bg-section">
+        <label class="section-label">🖼️ 배경 이미지</label>
+        <div class="bg-options">
+          <label class="bg-upload-btn" for="bgInput">📁 이미지 선택</label>
+          <button class="bg-clear-btn" id="bgClearBtn">🗑️ 삭제</button>
+        </div>
+        <div class="bg-preview" id="bgPreview">
+          <img id="bgPreviewImg" src="" alt="">
+        </div>
+      </div>
+      <label class="section-label">📐 사진 모양</label>
+      <div class="shape-selector" id="shapeSelector">
+        <button class="shape-btn active" data-shape="square"><div class="preview"></div><span>사각형</span></button>
+        <button class="shape-btn" data-shape="rounded"><div class="preview"></div><span>둥근</span></button>
+        <button class="shape-btn" data-shape="circle"><div class="preview"></div><span>원형</span></button>
+        <button class="shape-btn" data-shape="polaroid"><div class="preview"></div><span>폴라로이드</span></button>
+        <button class="shape-btn" data-shape="film"><div class="preview"></div><span>필름</span></button>
+        <button class="shape-btn" data-shape="stamp"><div class="preview"></div><span>우표</span></button>
+        <button class="shape-btn" data-shape="heart"><div class="preview"></div><span>하트</span></button>
+        <button class="shape-btn" data-shape="hexagon"><div class="preview"></div><span>육각형</span></button>
+      </div>
+      <div class="calendar-card" id="customPreviewCard">
+        <div class="custom-bg" id="customBgPreview2"></div>
+        <div class="pattern"></div>
+        <div class="month-nav">
+          <button class="nav-btn">◀</button>
+          <h2 class="month-title">미리보기</h2>
+          <button class="nav-btn">▶</button>
+        </div>
+        <div class="calendar-grid" id="previewGrid2"></div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*">
+  <input type="file" id="bgInput" accept="image/*">
+
+  <!-- Photo Modal -->
+  <div class="modal-overlay" id="photoModal">
+    <div class="modal">
+      <img class="modal-image" id="modalImage" src="" alt="">
+      <div class="modal-info"><h3 class="modal-date" id="modalDate"></h3></div>
+      <div class="modal-buttons">
+        <button class="modal-btn delete" id="deletePhotoBtn">🗑 삭제</button>
+        <button class="modal-btn close" id="closePhotoBtn">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Name Modal -->
+  <div class="modal-overlay" id="nameModal">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title" id="nameModalTitle">달력 이름</h3></div>
+      <div class="modal-body">
+        <input type="text" class="modal-input" id="calendarNameInput" placeholder="달력 이름을 입력하세요">
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn close" id="cancelNameBtn">취소</button>
+        <button class="modal-btn primary" id="confirmNameBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">달력 삭제</h3></div>
+      <div class="modal-body">
+        <p style="font-size: 14px; color: var(--text2);">이 달력을 삭제하시겠습니까?<br>모든 사진과 설정이 삭제됩니다.</p>
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn close" id="cancelDeleteBtn">취소</button>
+        <button class="modal-btn delete" id="confirmDeleteBtn">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+    const ICONS = { '': '📷', spring: '🌸', summer: '🌊', autumn: '🍂', winter: '❄️', knitting: '🧶', climbing: '🧗', swimming: '🏊' };
+
+    let calendars = {};
+    let currentCalendarId = null;
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
+    let selectedDay = null;
+    let nameModalMode = 'add'; // 'add' or 'rename'
+
+    const $ = id => document.getElementById(id);
+
+    // Initialize
+    function init() {
+      loadCalendars();
+      if (Object.keys(calendars).length === 0) {
+        createCalendar('내 달력');
+      }
+      currentCalendarId = localStorage.getItem('currentCalendarId') || Object.keys(calendars)[0];
+      updateCalendarDropdown();
+      render();
+    }
+
+    function loadCalendars() {
+      calendars = JSON.parse(localStorage.getItem('calendars') || '{}');
+    }
+
+    function saveCalendars() {
+      localStorage.setItem('calendars', JSON.stringify(calendars));
+      localStorage.setItem('currentCalendarId', currentCalendarId);
+    }
+
+    function createCalendar(name) {
+      const id = 'cal_' + Date.now();
+      calendars[id] = {
+        id: id,
+        name: name,
+        created: Date.now(),
+        months: {}
+      };
+      currentCalendarId = id;
+      saveCalendars();
+      updateCalendarDropdown();
+      return id;
+    }
+
+    function deleteCalendar(id) {
+      if (Object.keys(calendars).length <= 1) {
+        toast('마지막 달력은 삭제할 수 없어요');
+        return false;
+      }
+      delete calendars[id];
+      if (currentCalendarId === id) {
+        currentCalendarId = Object.keys(calendars)[0];
+      }
+      saveCalendars();
+      updateCalendarDropdown();
+      render();
+      return true;
+    }
+
+    function renameCalendar(id, newName) {
+      if (calendars[id]) {
+        calendars[id].name = newName;
+        saveCalendars();
+        updateCalendarDropdown();
+      }
+    }
+
+    function updateCalendarDropdown() {
+      const select = $('calendarSelect');
+      select.innerHTML = Object.values(calendars)
+        .sort((a, b) => b.created - a.created)
+        .map(cal => `<option value="${cal.id}" ${cal.id === currentCalendarId ? 'selected' : ''}>${cal.name}</option>`)
+        .join('');
+    }
+
+    function getMonthKey() {
+      return `${currentYear}_${String(currentMonth + 1).padStart(2, '0')}`;
+    }
+
+    function getCurrentMonthData() {
+      const cal = calendars[currentCalendarId];
+      if (!cal) return { photos: {}, theme: '', shape: 'square', bg: '' };
+      return cal.months[getMonthKey()] || { photos: {}, theme: '', shape: 'square', bg: '' };
+    }
+
+    function saveCurrentMonthData(data) {
+      if (!calendars[currentCalendarId]) return;
+      calendars[currentCalendarId].months[getMonthKey()] = data;
+      saveCalendars();
+    }
+
+    function applySettings() {
+      const data = getCurrentMonthData();
+      document.body.className = '';
+      if (data.theme) document.body.classList.add(`theme-${data.theme}`);
+      document.body.classList.add(`shape-${data.shape || 'square'}`);
+      
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === data.theme);
+      });
+      document.querySelectorAll('.shape-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.shape === (data.shape || 'square'));
+      });
+      
+      $('themeIcon').textContent = ICONS[data.theme] || '📷';
+      
+      const bgStyle = data.bg ? `url(${data.bg})` : '';
+      $('customBg').style.backgroundImage = bgStyle;
+      $('customBgPreview').style.backgroundImage = bgStyle;
+      $('customBgPreview2').style.backgroundImage = bgStyle;
+      
+      if (data.bg) {
+        $('bgPreview').classList.add('show');
+        $('bgPreviewImg').src = data.bg;
+      } else {
+        $('bgPreview').classList.remove('show');
+      }
+    }
+
+    function render() {
+      const data = getCurrentMonthData();
+      applySettings();
+      
+      $('monthTitle').textContent = `${currentYear}년 ${MONTHS[currentMonth]}`;
+      
+      const days = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const first = new Date(currentYear, currentMonth, 1).getDay();
+      const photos = data.photos || {};
+      
+      let html = '';
+      for (let i = 0; i < first; i++) html += '<div class="day-cell empty"></div>';
+      
+      for (let d = 1; d <= days; d++) {
+        const dow = (first + d - 1) % 7;
+        const isSun = dow === 0, isSat = dow === 6;
+        
+        if (photos[d]) {
+          html += `<div class="day-cell" data-day="${d}">
+            <div class="photo-wrap">
+              <img class="photo" src="${photos[d]}" alt="${d}일">
+              <span class="overlay">${d}</span>
+            </div>
+          </div>`;
+        } else {
+          html += `<div class="day-cell" data-day="${d}">
+            <div class="empty-day">
+              <span class="day-num ${isSun?'sun':''} ${isSat?'sat':''}">${d}</span>
+              <span class="icon">${ICONS[data.theme] || '📷'}</span>
+            </div>
+          </div>`;
+        }
+      }
+      
+      $('calendarGrid').innerHTML = html;
+      $('photoCount').textContent = `${Object.keys(photos).length}장의 추억`;
+      
+      document.querySelectorAll('#calendarGrid .day-cell[data-day]').forEach(cell => {
+        cell.onclick = () => handleDay(+cell.dataset.day);
+      });
+      
+      renderPreviews();
+    }
+
+    function renderPreviews() {
+      const data = getCurrentMonthData();
+      const icon = ICONS[data.theme] || '📷';
+      const previewHtml = `
+        <div class="day-cell"><div class="photo-wrap"><img class="photo" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=100&h=100&fit=crop"><span class="overlay">1</span></div></div>
+        <div class="day-cell"><div class="empty-day"><span class="day-num">2</span><span class="icon">${icon}</span></div></div>
+        <div class="day-cell"><div class="photo-wrap"><img class="photo" src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=100&h=100&fit=crop"><span class="overlay">3</span></div></div>
+        <div class="day-cell"><div class="empty-day"><span class="day-num sat">4</span><span class="icon">${icon}</span></div></div>
+      `;
+      $('previewGrid').innerHTML = previewHtml;
+      $('previewGrid2').innerHTML = previewHtml;
+    }
+
+    function handleDay(day) {
+      selectedDay = day;
+      const data = getCurrentMonthData();
+      if (data.photos && data.photos[day]) {
+        $('modalImage').src = data.photos[day];
+        $('modalDate').textContent = `${currentYear}년 ${currentMonth+1}월 ${day}일`;
+        $('photoModal').classList.add('show');
+      } else {
+        $('fileInput').click();
+      }
+    }
+
+    // Calendar management
+    $('calendarSelect').onchange = e => {
+      currentCalendarId = e.target.value;
+      saveCalendars();
+      render();
+    };
+
+    $('addCalendarBtn').onclick = () => {
+      nameModalMode = 'add';
+      $('nameModalTitle').textContent = '새 달력 만들기';
+      $('calendarNameInput').value = '';
+      $('nameModal').classList.add('show');
+      $('calendarNameInput').focus();
+    };
+
+    $('renameCalendarBtn').onclick = () => {
+      nameModalMode = 'rename';
+      $('nameModalTitle').textContent = '달력 이름 변경';
+      $('calendarNameInput').value = calendars[currentCalendarId]?.name || '';
+      $('nameModal').classList.add('show');
+      $('calendarNameInput').focus();
+    };
+
+    $('deleteCalendarBtn').onclick = () => {
+      if (Object.keys(calendars).length <= 1) {
+        toast('마지막 달력은 삭제할 수 없어요');
+        return;
+      }
+      $('deleteModal').classList.add('show');
+    };
+
+    $('cancelNameBtn').onclick = () => $('nameModal').classList.remove('show');
+    $('confirmNameBtn').onclick = () => {
+      const name = $('calendarNameInput').value.trim();
+      if (!name) {
+        toast('이름을 입력해주세요');
+        return;
+      }
+      if (nameModalMode === 'add') {
+        createCalendar(name);
+        render();
+        toast('새 달력이 만들어졌어요 ✨');
+      } else {
+        renameCalendar(currentCalendarId, name);
+        toast('이름이 변경되었어요');
+      }
+      $('nameModal').classList.remove('show');
+    };
+
+    $('calendarNameInput').onkeydown = e => {
+      if (e.key === 'Enter') $('confirmNameBtn').click();
+    };
+
+    $('cancelDeleteBtn').onclick = () => $('deleteModal').classList.remove('show');
+    $('confirmDeleteBtn').onclick = () => {
+      if (deleteCalendar(currentCalendarId)) {
+        toast('달력이 삭제되었어요');
+      }
+      $('deleteModal').classList.remove('show');
+    };
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        $(`panel${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.add('active');
+      };
+    });
+
+    // Photo input
+    $('fileInput').onchange = e => {
+      const file = e.target.files[0];
+      if (file && selectedDay) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const size = 400;
+            canvas.width = size; canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const min = Math.min(img.width, img.height);
+            ctx.drawImage(img, (img.width-min)/2, (img.height-min)/2, min, min, 0, 0, size, size);
+            
+            const data = getCurrentMonthData();
+            if (!data.photos) data.photos = {};
+            data.photos[selectedDay] = canvas.toDataURL('image/jpeg', 0.7);
+            saveCurrentMonthData(data);
+            render();
+            toast('사진이 추가되었습니다 ✨');
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+      e.target.value = '';
+    };
+
+    // Background input
+    $('bgInput').onchange = e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const maxSize = 600;
+            let w = img.width, h = img.height;
+            if (w > h) { if (w > maxSize) { h = h * maxSize / w; w = maxSize; } }
+            else { if (h > maxSize) { w = w * maxSize / h; h = maxSize; } }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            
+            const data = getCurrentMonthData();
+            data.bg = canvas.toDataURL('image/jpeg', 0.5);
+            try {
+              saveCurrentMonthData(data);
+              applySettings();
+              toast('배경이 변경되었습니다 🖼️');
+            } catch (err) {
+              toast('이미지가 너무 커요');
+            }
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+      e.target.value = '';
+    };
+
+    $('bgClearBtn').onclick = () => {
+      const data = getCurrentMonthData();
+      data.bg = '';
+      saveCurrentMonthData(data);
+      applySettings();
+      toast('배경이 삭제되었습니다');
+    };
+
+    // Theme selector
+    $('themeSelector').onclick = e => {
+      if (e.target.classList.contains('theme-btn')) {
+        const data = getCurrentMonthData();
+        data.theme = e.target.dataset.theme;
+        saveCurrentMonthData(data);
+        applySettings();
+        renderPreviews();
+      }
+    };
+
+    // Shape selector
+    $('shapeSelector').onclick = e => {
+      const btn = e.target.closest('.shape-btn');
+      if (btn) {
+        const data = getCurrentMonthData();
+        data.shape = btn.dataset.shape;
+        saveCurrentMonthData(data);
+        applySettings();
+        renderPreviews();
+      }
+    };
+
+    // Photo modal
+    $('deletePhotoBtn').onclick = () => {
+      if (selectedDay) {
+        const data = getCurrentMonthData();
+        if (data.photos) delete data.photos[selectedDay];
+        saveCurrentMonthData(data);
+        render();
+        $('photoModal').classList.remove('show');
+        toast('사진이 삭제되었습니다');
+      }
+    };
+    $('closePhotoBtn').onclick = () => $('photoModal').classList.remove('show');
+    $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal').classList.remove('show'); };
+
+    // Navigation
+    $('prevBtn').onclick = () => { currentMonth === 0 ? (currentYear--, currentMonth = 11) : currentMonth--; render(); };
+    $('nextBtn').onclick = () => { currentMonth === 11 ? (currentYear++, currentMonth = 0) : currentMonth++; render(); };
+
+    // Export
+    $('saveBtn').onclick = async () => {
+      toast('이미지 생성 중...');
+      try {
+        const canvas = await html2canvas($('calendarCard'), { scale: 2, useCORS: true });
+        const link = document.createElement('a');
+        const calName = calendars[currentCalendarId]?.name || '달력';
+        link.download = `${calName}_${currentYear}_${currentMonth+1}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        toast('저장되었습니다 📸');
+      } catch(e) { toast('저장 실패'); }
+    };
+
+    $('shareBtn').onclick = async () => {
+      if (!navigator.share) { toast('공유 미지원'); return; }
+      toast('이미지 생성 중...');
+      try {
+        const canvas = await html2canvas($('calendarCard'), { scale: 2, useCORS: true });
+        canvas.toBlob(async blob => {
+          const calName = calendars[currentCalendarId]?.name || '달력';
+          const file = new File([blob], `${calName}.png`, { type: 'image/png' });
+          try { await navigator.share({ files: [file] }); } catch(e) {}
+        }, 'image/png');
+      } catch(e) { toast('공유 실패'); }
+    };
+
+    function toast(msg) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    init();
+  </script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
