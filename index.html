@@ -531,24 +531,46 @@
 
     function applySettings() {
       const data = getCurrentMonthData();
+
+      // 1) 기존: body에 적용 (전체 배경/폰트용)
       document.body.className = '';
       if (data.theme) document.body.classList.add(`theme-${data.theme}`);
       document.body.classList.add(`shape-${data.shape || 'square'}`);
-      
+
+      // ✅ 2) 추가: 캡처 대상 카드에도 동일하게 적용 (내보내기/공유에서 모양 유지)
+      const shapeClass = `shape-${data.shape || 'square'}`;
+      const themeClass = data.theme ? `theme-${data.theme}` : '';
+
+      // 캡처되는 카드들(실제/미리보기)에 클래스 붙이기
+      const cards = [$('calendarCard'), $('themePreviewCard'), $('customPreviewCard')];
+      cards.forEach(card => {
+        if (!card) return;
+        // 기존 theme-/shape- 클래스 제거
+        card.className = card.className
+          .split(' ')
+          .filter(c => !(c.startsWith('theme-') || c.startsWith('shape-')))
+          .join(' ')
+          .trim();
+
+        if (themeClass) card.classList.add(themeClass);
+        card.classList.add(shapeClass);
+      });
+
+      // 3) UI 버튼 active 처리(기존 그대로)
       document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.theme === data.theme);
       });
       document.querySelectorAll('.shape-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.shape === (data.shape || 'square'));
       });
-      
+
       $('themeIcon').textContent = ICONS[data.theme] || '📷';
-      
+
       const bgStyle = data.bg ? `url(${data.bg})` : '';
       $('customBg').style.backgroundImage = bgStyle;
       $('customBgPreview').style.backgroundImage = bgStyle;
       $('customBgPreview2').style.backgroundImage = bgStyle;
-      
+
       if (data.bg) {
         $('bgPreview').classList.add('show');
         $('bgPreviewImg').src = data.bg;
@@ -556,6 +578,7 @@
         $('bgPreview').classList.remove('show');
       }
     }
+
 
     function render() {
       const data = getCurrentMonthData();
