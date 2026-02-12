@@ -170,7 +170,17 @@
     }
     .nav-btn:active { transform: scale(0.95); }
     .month-title { font-size: 17px; font-weight: 600; color: var(--text1); font-family: var(--font); }
-    .is-capturing .month-nav .nav-btn { display: none !important; }
+    /* 캡처 중엔 화살표를 "자리 유지"한 채로 숨김 (레이아웃 유지) */
+    .is-capturing .month-nav .nav-btn {
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* 캡처 시 월 제목 줄바꿈 방지 */
+    .is-capturing .month-title {
+      white-space: nowrap !important;
+    }
+
 
     .day-headers { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 4px; position: relative; z-index: 1; }
     .day-header { text-align: center; font-size: 10px; font-weight: 600; padding: 4px 0; color: var(--text2); }
@@ -848,6 +858,9 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
       const node = $('calendarCard');
       try {
         node.classList.add('is-capturing');
+        
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        await new Promise(r => setTimeout(r, 50));
 
         const dataUrl = await domtoimage.toPng(node, { cacheBust: true });
 
@@ -874,6 +887,9 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
 
       try {
         node.classList.add('is-capturing');
+        
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        await new Promise(r => setTimeout(r, 50));
 
         const dataUrl = await domtoimage.toPng(node, { cacheBust: true });
 
