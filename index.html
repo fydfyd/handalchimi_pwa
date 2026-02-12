@@ -856,17 +856,27 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
     $('saveBtn').onclick = async () => {
       toast('이미지 생성 중...');
       const node = $('calendarCard');
+      const titleEl = $('monthTitle');
+      const originalTitle = titleEl.textContent;
+
       try {
         node.classList.add('is-capturing');
-        
-        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+        // ✅ 캡처용 제목으로 잠깐 변경
+        const calName = calendars[currentCalendarId]?.name?.trim();
+        if (calName) {
+          titleEl.textContent = `${originalTitle} ${calName}`;
+        }
+
+        if (document.fonts && document.fonts.ready) {
+          await document.fonts.ready;
+        }
         await new Promise(r => setTimeout(r, 50));
 
         const dataUrl = await domtoimage.toPng(node, { cacheBust: true });
 
         const link = document.createElement('a');
-        const calName = calendars[currentCalendarId]?.name || '달력';
-        link.download = `${calName}_${currentYear}_${currentMonth+1}.png`;
+        link.download = `${calName || '달력'}_${currentYear}_${currentMonth+1}.png`;
         link.href = dataUrl;
         link.click();
 
@@ -875,20 +885,33 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
         console.error(e);
         toast('저장 실패');
       } finally {
+        // ✅ 원래 제목으로 복구 + 캡처 클래스 제거
+        titleEl.textContent = originalTitle;
         node.classList.remove('is-capturing');
       }
     };
+
 
 
     $('shareBtn').onclick = async () => {
       if (!navigator.share) { toast('공유 미지원'); return; }
       toast('이미지 생성 중...');
       const node = $('calendarCard');
+      const titleEl = $('monthTitle');
+      const originalTitle = titleEl.textContent;
 
       try {
         node.classList.add('is-capturing');
-        
-        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+        // ✅ 캡처용 제목으로 잠깐 변경
+        const calName = calendars[currentCalendarId]?.name?.trim();
+        if (calName) {
+          titleEl.textContent = `${originalTitle} ${calName}`;
+        }
+
+        if (document.fonts && document.fonts.ready) {
+          await document.fonts.ready;
+        }
         await new Promise(r => setTimeout(r, 50));
 
         const dataUrl = await domtoimage.toPng(node, { cacheBust: true });
@@ -896,17 +919,18 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
         const res = await fetch(dataUrl);
         const blob = await res.blob();
 
-        const calName = calendars[currentCalendarId]?.name || '달력';
-        const file = new File([blob], `${calName}.png`, { type: 'image/png' });
-
+        const file = new File([blob], `${calName || '달력'}.png`, { type: 'image/png' });
         try { await navigator.share({ files: [file] }); } catch (e) {}
       } catch (e) {
         console.error(e);
         toast('공유 실패');
       } finally {
+        // ✅ 원래 제목으로 복구 + 캡처 클래스 제거
+        titleEl.textContent = originalTitle;
         node.classList.remove('is-capturing');
       }
     };
+
 
 
     function toast(msg) {
