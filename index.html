@@ -170,6 +170,7 @@
     }
     .nav-btn:active { transform: scale(0.95); }
     .month-title { font-size: 17px; font-weight: 600; color: var(--text1); font-family: var(--font); }
+    .is-capturing .month-nav .nav-btn { display: none !important; }
 
     .day-headers { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 4px; position: relative; z-index: 1; }
     .day-header { text-align: center; font-size: 10px; font-weight: 600; padding: 4px 0; color: var(--text2); }
@@ -844,12 +845,11 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
     // Export
     $('saveBtn').onclick = async () => {
       toast('이미지 생성 중...');
+      const node = $('calendarCard');
       try {
-        const node = $('calendarCard');
+        node.classList.add('is-capturing');
 
-        const dataUrl = await domtoimage.toPng(node, {
-          cacheBust: true
-        });
+        const dataUrl = await domtoimage.toPng(node, { cacheBust: true });
 
         const link = document.createElement('a');
         const calName = calendars[currentCalendarId]?.name || '달력';
@@ -861,6 +861,8 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
       } catch (e) {
         console.error(e);
         toast('저장 실패');
+      } finally {
+        node.classList.remove('is-capturing');
       }
     };
 
@@ -868,12 +870,12 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
     $('shareBtn').onclick = async () => {
       if (!navigator.share) { toast('공유 미지원'); return; }
       toast('이미지 생성 중...');
-      try {
-        const node = $('calendarCard');
+      const node = $('calendarCard');
 
-        const dataUrl = await domtoimage.toPng(node, {
-          cacheBust: true
-        });
+      try {
+        node.classList.add('is-capturing');
+
+        const dataUrl = await domtoimage.toPng(node, { cacheBust: true });
 
         const res = await fetch(dataUrl);
         const blob = await res.blob();
@@ -885,6 +887,8 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
       } catch (e) {
         console.error(e);
         toast('공유 실패');
+      } finally {
+        node.classList.remove('is-capturing');
       }
     };
 
