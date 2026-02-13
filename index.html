@@ -503,6 +503,25 @@
       localStorage.setItem('currentCalendarId', currentCalendarId);
     }
 
+    function getCaptureOptions(node) {
+      const rect = node.getBoundingClientRect();
+
+      // ✅ 2~3 추천 (너무 높이면 느려지거나 메모리 터질 수 있음)
+      const scale = Math.min(3, window.devicePixelRatio || 2);
+
+      return {
+        cacheBust: true,
+        width: Math.round(rect.width * scale),
+        height: Math.round(rect.height * scale),
+        style: {
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+          width: `${rect.width}px`,
+          height: `${rect.height}px`,
+        },
+      };
+    }
+
     function createCalendar(name) {
       const id = 'cal_' + Date.now();
       calendars[id] = {
