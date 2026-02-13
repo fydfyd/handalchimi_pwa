@@ -914,7 +914,7 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
         }
         await new Promise(r => setTimeout(r, 50));
 
-        const dataUrl = await domtoimage.toPng(node, { cacheBust: true });
+        const dataUrl = await domtoimage.toPng(node, getCaptureOptions(node));
 
         const link = document.createElement('a');
         link.download = `${calName || '달력'}_${currentYear}_${currentMonth+1}.png`;
@@ -955,7 +955,7 @@ $('photoModal').onclick = e => { if (e.target === $('photoModal')) $('photoModal
         }
         await new Promise(r => setTimeout(r, 50));
 
-        const dataUrl = await domtoimage.toPng(node, { cacheBust: true });
+        const dataUrl = await domtoimage.toPng(node, getCaptureOptions(node));
 
         const res = await fetch(dataUrl);
         const blob = await res.blob();
