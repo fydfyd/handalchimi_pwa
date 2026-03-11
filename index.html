@@ -420,7 +420,7 @@
     </div>
   </div>
 
-  <input type="file" id="fileInput" accept="image/*">
+  <input type="file" id="fileInput" accept="image/*" capture="environment">
   <input type="file" id="bgInput" accept="image/*">
 
   <!-- Photo Modal -->
@@ -652,9 +652,12 @@
         const isSun = dow === 0, isSat = dow === 6;
         
         if (photos[d]) {
+          const photoItem = photos[d];
+          const photoSrc = typeof photoItem === 'string' ? photoItem : photoItem.img;
+
           html += `<div class="day-cell" data-day="${d}">
             <div class="photo-wrap">
-              <img class="photo" src="${photos[d]}" alt="${d}일">
+              <img class="photo" src="${photoSrc}" alt="${d}일">
               <span class="overlay">${d}</span>
             </div>
           </div>`;
@@ -695,8 +698,19 @@
       selectedDay = day;
       const data = getCurrentMonthData();
       if (data.photos && data.photos[day]) {
-        $('modalImage').src = data.photos[day];
-        $('modalDate').textContent = `${currentYear}년 ${currentMonth+1}월 ${day}일`;
+        const photoItem = data.photos[day];
+        const photoSrc = typeof photoItem === 'string' ? photoItem : photoItem.img;
+
+        $('modalImage').src = photoSrc;
+
+        let dateText = `${currentYear}년 ${currentMonth+1}월 ${day}일`;
+        if (typeof photoItem === 'object' && photoItem.time) {
+          const shotTime = new Date(photoItem.time);
+          const timeText = shotTime.toLocaleString('ko-KR');
+          dateText += ` · ${timeText}`;
+        }
+
+        $('modalDate').textContent = dateText;
         $('photoModal').classList.add('show');
       } else {
         $('fileInput').click();
@@ -791,7 +805,10 @@
             
             const data = getCurrentMonthData();
             if (!data.photos) data.photos = {};
-            data.photos[selectedDay] = canvas.toDataURL('image/jpeg', 0.7);
+            data.photos[selectedDay] = {
+              img: canvas.toDataURL('image/jpeg', 0.7),
+              time: new Date().toISOString()
+            };
             saveCurrentMonthData(data);
             render();
             toast('사진이 추가되었습니다 ✨');
