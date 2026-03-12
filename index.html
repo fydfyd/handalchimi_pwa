@@ -645,7 +645,16 @@
 
 
     function render() {
+      const data = getCurrentMonthData();
       const cal = calendars[currentCalendarId];
+      applySettings();
+
+      $('monthTitle').textContent = `${currentYear}년 ${MONTHS[currentMonth]}`;
+
+      const days = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const first = new Date(currentYear, currentMonth, 1).getDay();
+      const photos = data.photos || {};
+
       let html = '';
       let weekDone = 0, weekHold = 0;
 
@@ -694,11 +703,9 @@
           </div>`;
         }
 
-        // 주 마지막(토요일 or 월말)에 주간 뱃지 삽입
         if (isSat || d === days) {
           const weekOk = weekDone >= 3 || (weekDone + weekHold >= 3 && weekHold <= 2);
           html += `<div class="week-badge">${weekOk ? '✅' : (weekDone + weekHold > 0 ? '⬜' : '')}</div>`;
-          // 남은 빈칸 채우기 (마지막 주 토요일 전에 끝난 경우)
           if (d === days && !isSat) {
             const remaining = 6 - dow;
             for (let k = 0; k < remaining; k++) html += '<div class="day-cell empty"></div>';
@@ -706,6 +713,20 @@
           weekDone = 0; weekHold = 0;
         }
       }
+
+      $('calendarGrid').innerHTML = html;
+
+      const doneCount = Object.values(photos).filter(p => p?.status === 'done' || typeof p === 'string').length;
+      const holdCount = Object.values(photos).filter(p => p?.status === 'hold').length;
+      const target = 9;
+      $('challengeTitle').textContent = `${cal.challengeField || '챌린지'} 인증`;
+      $('challengeRate').textContent = `✅ ${doneCount}/${target}회 달성 · 🟡 HOLD ${holdCount}/2회`;
+
+      document.querySelectorAll('#calendarGrid .day-cell[data-day]').forEach(cell => {
+        cell.onclick = () => handleDay(+cell.dataset.day);
+      });
+
+      renderPreviews();
     }
 
     function renderPreviews() {
