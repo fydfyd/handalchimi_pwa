@@ -628,7 +628,7 @@
         btn.classList.toggle('active', btn.dataset.shape === (data.shape || 'square'));
       });
 
-      $('themeIcon').textContent = ICONS[data.theme] || '📷';
+      // themeIcon removed
 
       const bgStyle = data.bg ? `url(${data.bg})` : '';
       $('customBg').style.backgroundImage = bgStyle;
